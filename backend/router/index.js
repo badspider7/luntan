@@ -100,11 +100,6 @@ router.get("/slogn", async (ctx) => {
  * @desc 文章接口
  * @access 接口公开
  */
-// router.get('/articles', async (ctx) => {
-//   const data = await getNews()
-//   console.log(data);
-//   ctx.body = data
-// })
 router.get('/article', async ctx => {
   const data = await Article.find().select('title titleUrl -_id')
   ctx.body = data

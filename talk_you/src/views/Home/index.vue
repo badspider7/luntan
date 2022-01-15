@@ -1,5 +1,5 @@
 <template>
-  <div id="Home">
+  <div id="Home" class="home">
     <!-- 头部 -->
     <div class="header" v-show="isShow">
       <div class="logo">
@@ -7,12 +7,39 @@
         <span class="slogan">T*YOU</span>
       </div>
       <div class="search">
-        <input type="text" placeholder="输入你要查询的文章" />
+        <input
+          type="text"
+          placeholder="输入你要查询的文章"
+          v-model="inputData"
+          @focus="showBox=true"
+          @blur="showBox=false"
+        />
         <button>
           <span>
             <i class="iconfont icon-search"></i>
           </span>
         </button>
+        <div class="filterMsg" v-show="showBox">
+          <ul>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+          </ul>
+        </div>
       </div>
       <div class="right">
         <div class="weather">{{ city }}&nbsp;|&nbsp;{{ temperature }}℃</div>
@@ -21,7 +48,7 @@
             >登录/注册</router-link
           >
           <div v-show="token" style="color: #fff">
-            <span>{{name}}</span
+            <span>{{ name }}</span
             >/
             <span
               ><a href="#" style="color: #fff" @click="onLoginOut"
@@ -61,19 +88,39 @@
     <!-- 文章 -->
     <Pages />
     <!-- 评论 -->
-    <comments/>
+    <!-- <comments/> -->
+    <!-- 底部 -->
+    <AntFooter />
+    <el-backtop :bottom="100" :visibility-height="100" :right="80">
+      <div
+        style="
+           {
+            height: 100%;
+            width: 100%;
+            background-color: #f2f5f6;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
+            text-align: center;
+            line-height: 40px;
+            color: #1989fa;
+          }
+        "
+      >
+        UP
+      </div>
+    </el-backtop>
   </div>
 </template>
 
 <script>
 import Pages from "../pages/index.vue";
-import Comments from '../comments/index.vue'
+import Comments from "../comments/index.vue";
+import AntFooter from "@/components/Footer/index.vue";
 import { mapState } from "vuex";
 import { getWeather, getSlogn } from "@/utils/login";
 
 export default {
   name: "Home",
-  components: { Pages,Comments },
+  components: { Pages, Comments, AntFooter },
   computed: {
     ...mapState({
       token: (state) => state.login.token,
@@ -86,6 +133,10 @@ export default {
       city: "",
       slogn: "",
       isShow: true,
+      originalArr: [], // 数据库中的title数据
+      inputData: "", // 搜索框输入的数据
+      filterData: [],
+      showBox: false,
       pics: [
         { url: require("./images/school.jpg") },
         { url: require("./images/小雪.png") },
@@ -114,6 +165,20 @@ export default {
         this.isShow = true;
       }
     },
+    // 模糊搜索数据
+    searchData(keywords) {
+      let arr = this.$store.state.page.titleInfo;
+      for (const item of arr) {
+        this.originalArr.push(item.title);
+      }
+      this.originalArr.filter((item) => {
+        if (item.includes(keywords)) {
+          this.filterData.push(item);
+        }
+      });
+      return this.filterData;
+    },
+
   },
   async mounted() {
     // 天气
@@ -124,6 +189,8 @@ export default {
     this.slogn = await this.Slogn();
     // 滚动
     window.addEventListener("scroll", this.handleScroll);
+
+    console.log(this.searchData());
   },
 };
 </script>
@@ -139,13 +206,12 @@ export default {
   width: 100vw;
   background-color: #21242a;
   z-index: 999;
-  transition: all .5s ease-in-out 0;
+  transition: all 0.5s ease-in-out 0;
   .logo {
     display: flex;
     align-items: center;
     position: relative;
     left: -67px;
-    // left: 67px;
     img {
       width: 60px;
       height: 60px;
@@ -166,7 +232,13 @@ export default {
       outline: none;
       border: none;
       &:focus {
-        color: red;
+        border-radius: 15px 0 0 0;
+        & + button {
+          border-radius: 0 15px 0 0;
+        }
+        & + .filterMsg {
+          color: red;
+        }
       }
     }
     button {
@@ -175,6 +247,7 @@ export default {
       border-radius: 0 15px 15px 0;
       border: none;
       outline: none;
+      background-color: #fff;
       .iconfont {
         font-size: 14px;
       }
@@ -182,6 +255,30 @@ export default {
         cursor: pointer;
         span i {
           color: #b3552c;
+        }
+      }
+    }
+    .filterMsg {
+      position: absolute;
+      width: 335px;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 0 0 15px 15px;
+      max-height: 400px;
+      overflow: hidden;
+      overflow-y: scroll;
+      // 滚动条样式
+      &::-webkit-scrollbar{
+        display: none;
+        width: 0;
+      }
+      li {
+        height: 30px;
+        line-height: 30px;
+        margin-bottom: 5px;
+        &:hover {
+          background-color: #e3e5e7;
+          cursor: pointer;
         }
       }
     }

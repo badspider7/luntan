@@ -7,7 +7,6 @@ const baseURL = "http://en.people.cn/";
 
 let title = []; // 文章标题
 let titleHref = []; //文章链接
-const time = 1000 * 60 * 60; // 定时爬取文章的时间
 
 // 格式化当前时间
 let now = dayjs().format('YYYY/MM/DD HH:mm:ss')
@@ -63,9 +62,4 @@ async function storage() {
   */
 }
 
-// 一小时爬取一次标题
-setTimeout(() => {
-  storage();
-}, time);
-
-
+module.exports = storage

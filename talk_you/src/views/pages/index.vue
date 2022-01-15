@@ -10,7 +10,7 @@
     </div>
     <div class="content">
       <ul class="page-card">
-        <li class="txt" v-for="(article,index) in titleInfo"  :key="index">
+        <li class="txt" v-for="(article,index) in titleInfo.slice(0,8)"  :key="index">
           <article class="page-article">
             <h4 class="page-title">
               <a :href="article.titleUrl" target="blank">{{article.title}}</a>
@@ -29,7 +29,7 @@ export default {
   name: "pages",
   computed:{
     ...mapState({
-      titleInfo:(state) => state.page.titleInfo,
+      titleInfo:(state) => state.page.titleInfo.reverse(),
       // titleURL: (state) => state.page.titleURL
     }),
   },
@@ -48,6 +48,7 @@ export default {
   margin-left: calc(-@Pagewidth / 2);
   margin-top: 30px;
   font-family: Humanist;
+  background-color: #fff;
   .title {
     margin-bottom: 20px;
     .el-icon-reading {

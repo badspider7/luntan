@@ -13,7 +13,6 @@ const mutations = {
 const actions = {
     async Articles({ commit }) {
         const data = await articles()
-        console.log(data);
         commit("ARTICLES",data)
     }
 }
