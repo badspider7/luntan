@@ -11,8 +11,9 @@
           type="text"
           placeholder="输入你要查询的文章"
           v-model="inputData"
-          @focus="showBox=true"
-          @blur="showBox=false"
+          @input="searchData(inputData)"
+          @focus="showBox = true"
+          @blur="showBox = false"
         />
         <button>
           <span>
@@ -21,22 +22,6 @@
         </button>
         <div class="filterMsg" v-show="showBox">
           <ul>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
-            <li>xxxxxx</li>
             <li>xxxxxx</li>
           </ul>
         </div>
@@ -69,12 +54,38 @@
         <span>{{ slogn }}</span>
       </div>
       <div class="search">
-        <input type="text" placeholder="输入你要查询的文章" />
+        <input
+          type="text"
+          placeholder="输入你要查询的文章"
+          @focus="showBox = true"
+          @blur="showBox = false"
+        />
         <button>
           <span>
             <i class="iconfont icon-search"></i>
           </span>
         </button>
+        <div class="filterMsg" v-show="showBox">
+          <ul>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+            <li>xxxxxx</li>
+          </ul>
+        </div>
       </div>
     </div>
     <!-- 轮播图 -->
@@ -147,7 +158,24 @@ export default {
   methods: {
     // 退出登录
     onLoginOut() {
-      this.$store.commit("deleteUser", null);
+      this.$confirm("是否退出登录", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+           this.$store.commit("deleteUser", null);
+          this.$message({
+            type: "success",
+            message: "退出成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消成功",
+          });
+        });
     },
     // 一言
     async Slogn() {
@@ -165,20 +193,49 @@ export default {
         this.isShow = true;
       }
     },
+    throttle(fn, threshhold) {
+      var timeout;
+      var start = new Date();
+      var threshhold = threshhold || 3000;
+      return function () {
+        var context = this,
+          args = arguments,
+          curr = new Date() - 0;
+
+        clearTimeout(timeout); //总是干掉事件回调
+        if (curr - start >= threshhold) {
+          console.log("now", curr, curr - start); //注意这里相减的结果，都差不多是160左右
+          fn.apply(context, args); //只执行一部分方法，这些方法是在某个时间段内执行一次
+          start = curr;
+        } else {
+          //让方法在脱离事件后也能执行一次
+          timeout = setTimeout(function () {
+            fn.apply(context, args);
+          }, threshhold);
+        }
+      };
+    },
+    debounce(fn, delay) {
+      // 记录上一次的延时器
+      var timer = null;
+      return function () {
+        // 清除上一次延时器
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          fn.apply(this);
+        }, delay);
+      };
+    },
     // 模糊搜索数据
     searchData(keywords) {
-      let arr = this.$store.state.page.titleInfo;
-      for (const item of arr) {
-        this.originalArr.push(item.title);
-      }
       this.originalArr.filter((item) => {
+        this.filterData = [];
         if (item.includes(keywords)) {
           this.filterData.push(item);
         }
       });
       return this.filterData;
     },
-
   },
   async mounted() {
     // 天气
@@ -190,6 +247,10 @@ export default {
     // 滚动
     window.addEventListener("scroll", this.handleScroll);
 
+    let arr = this.$store.state.page.titleInfo;
+    for (const item of arr) {
+      this.originalArr.push(item.title);
+    }
     console.log(this.searchData());
   },
 };
@@ -268,7 +329,7 @@ export default {
       overflow: hidden;
       overflow-y: scroll;
       // 滚动条样式
-      &::-webkit-scrollbar{
+      &::-webkit-scrollbar {
         display: none;
         width: 0;
       }

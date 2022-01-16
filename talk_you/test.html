@@ -7,20 +7,31 @@
     <title>Document</title>
   </head>
   <body>
-    <script>
-      let lessons = [
-        { title: "媒体查询响应式布局", category: "css" },
-        { title: "FLEX 弹性盒模型", category: "css" },
-        { title: "MYSQL多表查询随意操作", category: "mysql" },
-      ];
+    <button>点击一下</button>
+    <button id="btn">up</button>
+    <script type="text/javascript">
+      var btn = document.querySelector("button");
+      function debounce(fn, delay) {
+        // 记录上一次的延时器
+        var timer = null;
+        return function () {
+          // 清除上一次延时器
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            fn.apply(this);
+          }, delay);
+        };
+      }
 
-      let cssLessons = lessons.filter(function (item, index, array) {
-        if (item.category.toLowerCase() == "css") {
-          return true;
-        }
-      });
-
-      console.log(cssLessons);
+      btn.addEventListener(
+        "click",
+        debounce(function () {
+          console.log(1);
+        },1000)
+      );
+      document.getElementById("btn").onclick = debounce(function () {
+        console.log(1);
+      }, 1000);
     </script>
   </body>
 </html>
