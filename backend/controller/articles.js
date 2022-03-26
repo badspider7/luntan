@@ -8,8 +8,7 @@ const baseURL = "http://en.people.cn/";
 let title = []; // 文章标题
 let titleHref = []; //文章链接
 
-// 格式化当前时间
-let now = dayjs().format('YYYY/MM/DD HH:mm:ss')
+
 
 // 获取每日新闻
 async function getNews() {
@@ -35,6 +34,8 @@ async function getNews() {
 
 // 把文章标题存入数据库
 async function storage() {
+  // 格式化当前时间
+let now = dayjs().format('YYYY/MM/DD HH:mm:ss')
   const { title, titleHref } = await getNews()
 
   let arr = title.filter(async function (item, index, array) {
